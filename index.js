@@ -1,103 +1,58 @@
-const express = require('express')
-const morgan = require('morgan');
+require('dotenv').config();
+const express = require('express');
+const mongoose = require('mongoose');
+const app = express();
+const Person = require('./models/person')
 
-const app = express()
-app.use(express.json())
-app.use(morgan('tiny'));
-//提供前端静态文件
-app.use(express.static('dist'));
+// 检查命令行参数
+if (process.argv.length < 3) {
+    console.log('give password as argument');
+    process.exit(1);
+}
 
-let persons = [
-    {
-        "id": 1,
-        "name": "Arto Hellas",
-        "number": "040-123456"
-    },
-    {
-        "id": 2,
-        "name": "Ada Lovelace",
-        "number": "39-44-5323523"
-    },
-    {
-        "id": 3,
-        "name": "Dan Abramov",
-        "number": "12-43-234345"
-    },
-    {
-        "id": 4,
-        "name": "Mary Poppendieck",
-        "number": "39-23-6423122"
-    }
+const password = process.argv[2];
+const name = process.argv[3];
+const number = process.argv[4];
 
-]
+// const url = process.env.MONGODB_URI;
+
+// mongoose.set('strictQuery', false);
+// mongoose.connect(url);
+
+// // 定义数据模型
+// const personSchema = new mongoose.Schema({
+//     name: String,
+//     number: String,
+// });
+
+// const Person = mongoose.model('Person', personSchema);
+
+// //格式化返回对象
+// personSchema.set('toJSON', {
+//     transform: (document, returnedObject) => {
+
+//         delete returnedObject._id
+//         delete returnedObject.__v
+//     }
+// })
 
 
+
+
+// 查询所有
 app.get('/api/persons', (request, response) => {
-    response.json(persons)
-})
-
-app.get('/api/persons/:id', (request, response) => {
-
-    const id = Number(request.params.id)
-    console.log('id', id)
-    const person = persons.find(person => person.id === id)
-    if (person) {
-        response.json(person)
-    } else {
-        response.status(404).end()
-    }
-})
-// `/info` 路由，显示请求时间和电话簿条目数量
-app.get('/info', (request, response) => {
-    const currentTime = new Date();
-    const numberOfEntries = persons.length;
-
-    response.send(`
-      <p>Phonebook has info for ${numberOfEntries} people</p>
-      <p>${currentTime}</p>
-    `);
-});
-//删除
-app.delete('/api/persons/:id', (request, response) => {
-    const id = Number(request.params.id)
-    persons = persons.filter(person => person.id !== id)
-
-    response.status(204).end()
-})
-
-// 生成唯一 ID 的函数
-const generateId = () => {
-    return Math.floor(Math.random() * 1000000);
-};
-
-app.post('/api/persons', (request, response) => {
-    const body = request.body;
-
-    if (!body.name || !body.number) {
-        return response.status(400).json({
-            error: 'Name or number is missing'
+    Person.find({})
+        .then(persons => {
+            response.json(persons);
+        })
+        .catch(error => {
+            console.error('Error fetching persons:', error);
+            response.status(500).send('Internal Server Error');
         });
-    }
-
-    if (persons.some(person => person.name === body.name)) {
-        return response.status(400).json({
-            error: 'Name must be unique'
-        });
-    }
-
-    const newPerson = {
-        id: generateId(),
-        name: body.name,
-        number: body.number
-    };
-
-    persons = persons.concat(newPerson);
-
-    response.json(newPerson);
 });
 
-
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`)
-})
+    console.log(`Server running on port ${PORT}`);
+});
+
