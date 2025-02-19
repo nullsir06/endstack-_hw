@@ -110,6 +110,7 @@ const errorHandler = (error, request, response, next) => {
 
 app.use(errorHandler);
 
+
 // 连接数据库
 mongoose.connect(process.env.MONGODB_URI)
     .then(() => {
