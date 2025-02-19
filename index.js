@@ -1,42 +1,3 @@
-// require('dotenv').config();
-// const express = require('express');
-// const mongoose = require('mongoose');
-// const app = express();
-// const Person = require('./models/person')
-
-
-// app.get('/api/persons', (request, response) => {
-//     Person.find({})
-//         .then(persons => {
-//             response.json(persons);
-//         })
-//         .catch(error => {
-//             console.error('Error fetching persons:', error);
-//             response.status(500).send('Internal Server Error');
-//         });
-// });
-// //创建新联系人
-// app.post('/api/persons', (request, response) => {
-//     const body = request.body
-
-//     if (body.content === undefined) {
-//         return response.status(400).json({ error: 'content missing' })
-//     }
-
-//     const person = new Person({
-//         content: body.content,
-//         important: body.important || false,
-//     })
-
-//     person.save().then(savedPerson => {
-//         response.json(savedPerson)
-//     })
-// })
-
-// const PORT = process.env.PORT;
-// app.listen(PORT, () => {
-//     console.log(`Server running on port ${PORT}`);
-// });
 
 const express = require('express');
 const app = express();
@@ -47,7 +8,7 @@ const mongoose = require('mongoose');
 require('dotenv').config();
 const Person = require('./models/person');
 
-app.use(express.static('build'));
+app.use(express.static('dist'));
 app.use(express.json());
 app.use(cors());
 app.use(morgan('tiny'));
